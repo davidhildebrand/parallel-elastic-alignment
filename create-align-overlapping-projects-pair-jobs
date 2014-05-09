@@ -13,6 +13,7 @@ first=0
 last=$(($n-1))
 
 mkdir -p jobs
+mkdir -p jobs/log
 mkdir -p export
 
 #for i in `seq $first $step $(($last-3*$step))` 
@@ -25,7 +26,11 @@ do
 	job="jobs/align-overlapping-projects-pair-$range"
 
 	echo "#!/bin/bash" > $job
-	echo "${HOME}/bin/xvfb-run -a ${HOME}/packages/Fiji.app/fiji-linux64 -Xms10g -Xmx10g -Ddir1=$pwd/$range1 -Ddir2=$pwd/$range2 -- --no-splash ${pwd}/align-overlapping-projects-pair.bsh" >> $job
+	#echo "${HOME}/bin/xvfb-run -a ${HOME}/packages/Fiji.app/fiji-linux64 -Xms10g -Xmx10g -Ddir1=$pwd/$range1 -Ddir2=$pwd/$range2 -- --no-splash ${pwd}/align-overlapping-projects-pair.bsh" >> $job
+	#echo "/usr/bin/xvfb-run -a ${HOME}/packages/Fiji.app/fiji-linux64 -Xms10g -Xmx10g -Ddir1=$pwd/$range1 -Ddir2=$pwd/$range2 -- --no-splash ${pwd}/align-overlapping-projects-pair.bsh &> $pwd/jobs/log/fiji_align-overlapping-projects-pair_${range1}_${range2}.log" >> $job
+	echo "/usr/bin/xvfb-run -a ${HOME}/packages/Fiji.app/fiji-linux64 -Xms10g -Xmx10g -Ddir1=$pwd/$range1 -Ddir2=$pwd/$range2 -- --no-splash ${pwd}/align-overlapping-projects-pair.bsh" >> $job
+        echo $job
+        echo "range1=$range1 range2=$range2"
 	chmod a+x $job
 done
 

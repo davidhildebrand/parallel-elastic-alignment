@@ -21,9 +21,13 @@ start = Integer.parseInt(System.getProperty("start"));
 end = Integer.parseInt(System.getProperty("end"));
 overlap = Integer.parseInt(System.getProperty("overlap"));
 
+System.out.println( "DEBUG: dir=" + dir + " start=" + start + " end=" + end + " overlap=" + overlap + " " );
+
 ControlWindow.setGUIEnabled(false);
 
-for (int a = start; a < end - 2 * overlap; a += overlap) {
+System.out.println( "DEBUG: startloop" );
+for (int a = start; a <= end + 1 - 2 * overlap; a += overlap) {
+	System.out.println( "DEBUG: loopiter" );
 	range = a + "-" + (a + 2 * overlap - 1);
 	System.out.println("range: " + range);
 	
@@ -39,6 +43,11 @@ for (int a = start; a < end - 2 * overlap; a += overlap) {
 	}
 	project.destroy();
 }
+System.out.println( "DEBUG: endloop" );
+
+System.out.println( "All done testing, exiting." );
+
+Thread.sleep(1000);
 
 /* shutdown */
 runtime.exit(0);

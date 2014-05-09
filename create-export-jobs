@@ -16,6 +16,7 @@ first=0
 last=$(($n-1))
 
 mkdir -p jobs
+mkdir -p jobs/log
 mkdir -p export
 
 #for i in `seq $first $step $(($last-3*$step))` 
@@ -28,7 +29,8 @@ do
 	job="jobs/export-project-intersection-$range"
 
 	echo "#!/bin/bash" > $job
-	echo "${HOME}/bin/xvfb-run -a ${HOME}/packages/Fiji.app/fiji-linux64 -Xms10g -Xmx10g -Ddir1=$pwd/$range1 -Ddir2=$pwd/$range2 -Dexport=$pwd/export  -- --no-splash ${pwd}/open-and-export-project-intersection.bsh" >> $job
+	#echo "${HOME}/bin/xvfb-run -a ${HOME}/packages/Fiji.app/fiji-linux64 -Xms10g -Xmx10g -Ddir1=$pwd/$range1 -Ddir2=$pwd/$range2 -Dexport=$pwd/export  -- --no-splash ${pwd}/open-and-export-project-intersection.bsh" >> $job
+	echo "/usr/bin/xvfb-run -a ${HOME}/packages/Fiji.app/fiji-linux64 -Xms10g -Xmx10g -Ddir1=$pwd/$range1 -Ddir2=$pwd/$range2 -Dexport=$pwd/export  -- --no-splash ${pwd}/open-and-export-project-intersection.bsh" >> $job
 	chmod a+x $job
 done
 

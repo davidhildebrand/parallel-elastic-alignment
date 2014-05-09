@@ -4,6 +4,7 @@ pwd=`pwd`
 mkdir -p $pwd/jobs/log
 cd $pwd/jobs/log
 
-qsub -cwd -pe batch 1 $pwd/jobs/apply-aligned-overlapping-projects
+#qsub -cwd -pe batch 1 $pwd/jobs/apply-aligned-overlapping-projects
+bsub -qparallel -o$pwd/jobs/log/apply-aligned-overlapping-project_job%J.log -W168:00 -B -N -n6 -R"span[ptile=6]" -R"rusage[mem=3072]" $pwd/jobs/apply-aligned-overlapping-projects
 
 cd $pwd

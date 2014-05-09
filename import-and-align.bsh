@@ -18,6 +18,8 @@ import ini.trakem2.Project;
 import ini.trakem2.display.Layer;
 import ini.trakem2.display.Patch;
 import ini.trakem2.utils.Filter;
+import ini.trakem2.imaging.filters.NormalizeLocalContrast;
+import ini.trakem2.imaging.filters.IFilter;
 import ij.ImagePlus;
 import java.lang.Runtime;
 import java.util.ArrayList;
@@ -56,13 +58,18 @@ try {
 	
 	/* wait until all images have been imported */
 	task.join();
+
+	/* DGCH filterset */
+	for (p : layerset.getDisplayables(Patch.class))
+		p.appendFilters(new IFilter[]{new NormalizeLocalContrast(1000, 1000, 3.0f, true, true)});
 	
-//	/* wait until all mipmaps are generated */
-//	futures = new ArrayList();
-//	for (p : layerset.getDisplayables(Patch.class))
-//		futures.add(p.updateMipMaps());
-//	for (f : futures)
-//		f.get();
+        /* DGCH uncommented */
+	/* wait until all mipmaps are generated */
+	futures = new ArrayList();
+	for (p : layerset.getDisplayables(Patch.class))
+		futures.add(p.updateMipMaps());
+	for (f : futures)
+		f.get();
 
 	/* delete reference layer if it was not part of the import range */
 	l0 = layerset.getLayer(0);
@@ -88,29 +95,33 @@ try {
 	
 	paramAffine.ppm.sift.initialSigma = 1.6f;
 	paramAffine.ppm.sift.steps = 3;
-	paramAffine.ppm.sift.minOctaveSize = 200;
-	paramAffine.ppm.sift.maxOctaveSize = 1024;
+	paramAffine.ppm.sift.minOctaveSize = 500;
+	paramAffine.ppm.sift.maxOctaveSize = 1500;
 	paramAffine.ppm.sift.fdSize = 4;
 	paramAffine.ppm.sift.fdBins = 8;
 	paramAffine.ppm.rod = 0.92f;
 	paramAffine.ppm.clearCache = true;
 	paramAffine.ppm.maxNumThreadsSift = runtime.availableProcessors();
 	
-	paramAffine.maxEpsilon = 50.0f;
+	paramAffine.maxEpsilon = 200.0f;
 	paramAffine.minInlierRatio = 0.0f;
-	paramAffine.minNumInliers = 12;
-	paramAffine.expectedModelIndex = 0;
+	paramAffine.minNumInliers = 20;
+        /*
+          ModelIndex
+           0 = "Translation", 1 = "Rigid", 2 = "Similarity", 3 = "Affine"
+        */
+	paramAffine.expectedModelIndex = 1;
 	paramAffine.multipleHypotheses = true;
 	paramAffine.rejectIdentity = false;
 	paramAffine.identityTolerance = 0.0f;
 	paramAffine.maxNumNeighbors = 10;
-	paramAffine.maxNumFailures = 3;
+	paramAffine.maxNumFailures = 5;
 	paramAffine.maxNumThreads = runtime.availableProcessors();
 	
-	paramAffine.desiredModelIndex = 3;
+	paramAffine.desiredModelIndex = 2;
 	paramAffine.regularize = true;
-	paramAffine.maxIterationsOptimize = 2000;
-	paramAffine.maxPlateauwidthOptimize = 2000;
+	paramAffine.maxIterationsOptimize = 5000;
+	paramAffine.maxPlateauwidthOptimize = 5000;
 	paramAffine.regularizerIndex = 0;
 	paramAffine.visualize = false;
 	
@@ -146,6 +157,7 @@ try {
 	project.saveAs(dir + "/project.xml", true);
 
 	/* elastic alignment */
+        /*
 	paramElastic = new ElasticLayerAlignment.Param();
 	
 	paramElastic.layerScale = 0.25f;
@@ -189,7 +201,7 @@ try {
 		false,
 		false,
 		filter);
-	
+	*/	
 	/* wait until all mipmaps are generated */
 	futures = new ArrayList();
 	for (p : layerset.getDisplayables(Patch.class))
