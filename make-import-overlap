@@ -33,14 +33,14 @@ do
 	then
 		zmod=0
 		file="$z-$(($z+$mod-1))"
-		mkdir "$file"
+		mkdir -p "$file"
 	fi
 	
 	if [ "$zmoda" -eq "$(($mod/2))" ]
 	then
 		zmoda=$((-$mod/2))
 		filea="$z-$(($z+$mod-1))"
-		mkdir "$filea"
+		mkdir -p "$filea"
 	fi
 	
 	echo "$row 0 0 $z - - $min $max $t" >> "${file}/import.txt"
