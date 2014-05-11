@@ -21,8 +21,8 @@ do
 	range="$i-$(($i+3*$step-1))"
         echo ${range}
 	#qsub -cwd -pe batch 1 $pwd/jobs/align-overlapping-projects-pair-$range
-	bsub -qparallel -o$pwd/jobs/log/align-overlapping-projects-pair-${range}_job%J.log -W168:00 -B -N -n6 -R"span[ptile=6]" -R"rusage[mem=3072]" $pwd/jobs/align-overlapping-projects-pair-$range
-	echo "bsub -qparallel -o$pwd/jobs/log/align-overlapping-projects-pair-${range}_job%J.log -W168:00 -B -N -n6 -R"span[ptile=6]" -R"rusage[mem=3072]" $pwd/jobs/align-overlapping-projects-pair-$range"
+	bsub -qparallel -o$pwd/jobs/log/align-overlapping-projects-pair-${range}_job%J.log -W168:00 -n6 -R"span[ptile=6]" -R"rusage[mem=3072]" $pwd/jobs/align-overlapping-projects-pair-$range
+	echo "bsub -qparallel -o$pwd/jobs/log/align-overlapping-projects-pair-${range}_job%J.log -W168:00 -n6 -R"span[ptile=6]" -R"rusage[mem=3072]" $pwd/jobs/align-overlapping-projects-pair-$range"
 done
 
 cd $pwd
