@@ -18,6 +18,7 @@ import ini.trakem2.Project;
 import ini.trakem2.display.Layer;
 import ini.trakem2.display.Patch;
 import ini.trakem2.utils.Filter;
+import ini.trakem2.utils.Montage;
 import ini.trakem2.imaging.filters.NormalizeLocalContrast;
 import ini.trakem2.imaging.filters.IFilter;
 import ij.ImagePlus;

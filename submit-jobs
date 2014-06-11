@@ -11,7 +11,6 @@ do
 	#qsub -cwd -pe batch 4 $pwd/jobs/align-$range
         echo $range
 	bsub -qparallel -Jalign-${range} -o$pwd/jobs/log/align-${range}_job%J.log -W168:00 -n6 -R"span[ptile=6]" -R"rusage[mem=3072]" $pwd/jobs/align-$range
-	#echo "bsub -qparallel -Jalign-${range} -o$pwd/jobs/log/align-${range}_job%J.log -W168:00 -n6 -R"span[ptile=6]" -R"rusage[mem=3072]" $pwd/jobs/align-${range}"
 done
 
 cd $pwd
