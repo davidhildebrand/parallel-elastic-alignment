@@ -29,7 +29,7 @@ import mpicbg.trakem2.align.RegularizedAffineLayerAlignment;
 
 try {
 	runtime = Runtime.getRuntime();
-	System.out.println( runtime.availableProcessors() + " cores available for multi-threading" );
+	System.out.println( runtime.availableProcessors() + " cores available but not necessarily allocated for multi-threading" );
 	
 	dir = System.getProperty("dir");
 	file = System.getProperty("file");
@@ -91,40 +91,37 @@ try {
 		};
 	
 	/* affine alignment */
+	/* determined in collaboration with S Saalfeld 140609 */
 	paramAffine = new RegularizedAffineLayerAlignment.Param();
 	
 	paramAffine.ppm.sift.initialSigma = 1.6f;
 	paramAffine.ppm.sift.steps = 3;
 	paramAffine.ppm.sift.minOctaveSize = 500;
-	paramAffine.ppm.sift.maxOctaveSize = 1500;
+	paramAffine.ppm.sift.maxOctaveSize = 1024;
 	paramAffine.ppm.sift.fdSize = 4;
 	paramAffine.ppm.sift.fdBins = 8;
 	paramAffine.ppm.rod = 0.92f;
 	paramAffine.ppm.clearCache = true;
-	paramAffine.ppm.maxNumThreadsSift = runtime.availableProcessors();
+	paramAffine.ppm.maxNumThreadsSift = 6; //runtime.availableProcessors();
 	
-	paramAffine.maxEpsilon = 200.0f;
-	paramAffine.minInlierRatio = 0.0f;
-	paramAffine.minNumInliers = 20;
-        /*
-          ModelIndex
-           0 = "Translation", 1 = "Rigid", 2 = "Similarity", 3 = "Affine"
-        */
-	paramAffine.expectedModelIndex = 1;
-	paramAffine.multipleHypotheses = true;
+	paramAffine.maxEpsilon = 20.0f;
+	paramAffine.minInlierRatio = 0.05f;
+	paramAffine.minNumInliers = 10;
+        /*  ModelIndex 0 = "Translation", 1 = "Rigid", 2 = "Similarity", 3 = "Affine" */
+	paramAffine.expectedModelIndex = 3;
+	paramAffine.multipleHypotheses = false;
 	paramAffine.rejectIdentity = false;
 	paramAffine.identityTolerance = 0.0f;
 	paramAffine.maxNumNeighbors = 10;
-	paramAffine.maxNumFailures = 5;
-	paramAffine.maxNumThreads = runtime.availableProcessors();
+	paramAffine.maxNumFailures = 10;
+	paramAffine.maxNumThreads = 6; //runtime.availableProcessors();
 	
-	paramAffine.desiredModelIndex = 2;
+	paramAffine.desiredModelIndex = 3;
 	paramAffine.regularize = true;
 	paramAffine.maxIterationsOptimize = 5000;
 	paramAffine.maxPlateauwidthOptimize = 5000;
-	paramAffine.regularizerIndex = 0;
+	paramAffine.regularizerIndex = 1;
 	paramAffine.visualize = false;
-	
 	paramAffine.lambda = 0.1f;
 	
 	new RegularizedAffineLayerAlignment().exec(
@@ -157,39 +154,38 @@ try {
 	project.saveAs(dir + "/project.xml", true);
 
 	/* elastic alignment */
-        /*
 	paramElastic = new ElasticLayerAlignment.Param();
 	
-	paramElastic.layerScale = 0.25f;
-	paramElastic.searchRadius = 12;
-	paramElastic.blockRadius = 600;
-	paramElastic.resolutionSpringMesh = (int)Math.ceil((double)layerset.get2DBounds().width / 8192.0 * 32.0);
+	paramElastic.layerScale = 0.5f;
+	paramElastic.searchRadius = 40;
+	paramElastic.blockRadius = 80;
+	paramElastic.resolutionSpringMesh = (int)Math.ceil((double)layerset.get2DBounds().width / 8192.0 * 24.0);
 	
 	paramElastic.minR = 0.6f;
 	paramElastic.maxCurvatureR = 10.0f;
-	paramElastic.rodR = 0.92f;
+	paramElastic.rodR = 0.98f;
 	
 	paramElastic.useLocalSmoothnessFilter = true;
 	paramElastic.localModelIndex = 3;
-	paramElastic.localRegionSigma = 1000.0f;
-	paramElastic.maxLocalEpsilon = 1.0f;
-	paramElastic.maxLocalTrust = 4.0f;
+	paramElastic.localRegionSigma = 200.0f;
+	paramElastic.maxLocalEpsilon = 20.0f;
+	paramElastic.maxLocalTrust = 3.0f;
 	
 	paramElastic.isAligned = true;
-	paramElastic.maxNumFailures = 3;
-	paramElastic.maxNumNeighbors = 5;
-	paramElastic.maxNumThreads = 8;
+	paramElastic.maxNumFailures = 10;
+	paramElastic.maxNumNeighbors = 10;
+	paramElastic.maxNumThreads = 6;
 	
 	paramElastic.desiredModelIndex = 1;
 	paramElastic.maxIterationsOptimize = 1000;
 	paramElastic.maxPlateauwidthOptimize = 200;
 
-	paramElastic.stiffnessSpringMesh = 0.25f;
+	paramElastic.stiffnessSpringMesh = 0.10f;
 	paramElastic.maxStretchSpringMesh = 2000.0f;
-	paramElastic.maxIterationsSpringMesh = 5000;
-	paramElastic.maxPlateauwidthSpringMesh = 1000;
+	paramElastic.maxIterationsSpringMesh = 3000;
+	paramElastic.maxPlateauwidthSpringMesh = 200;
 	paramElastic.dampSpringMesh = 0.9f;
-	paramElastic.useLegacyOptimizer = false;
+	paramElastic.useLegacyOptimizer = true;
 
 	new ElasticLayerAlignment().exec(
 		paramElastic,
@@ -201,7 +197,12 @@ try {
 		false,
 		false,
 		filter);
-	*/	
+
+	/* remove filters */
+	for (p : layerset.getDisplayables(Patch.class))
+		p.setFilters(null);
+
+
 	/* wait until all mipmaps are generated */
 	futures = new ArrayList();
 	for (p : layerset.getDisplayables(Patch.class))
