@@ -122,8 +122,9 @@ try {
 	paramAffine.maxPlateauwidthOptimize = 5000;
 	paramAffine.regularizerIndex = 1;
 	paramAffine.visualize = false;
+
+	/* first affine regularized by 0.10 rigid */
 	paramAffine.lambda = 0.1f;
-	
 	new RegularizedAffineLayerAlignment().exec(
 			paramAffine,
 			layerRange,	
@@ -134,8 +135,8 @@ try {
 			false,
 			filter);
 	
+	/* second affine regularized by 0.01 rigid */
 	paramAffine.lambda = 0.01f;
-	
 	layerset.setMinimumDimensions();
 	
 	new RegularizedAffineLayerAlignment().exec(
@@ -198,7 +199,7 @@ try {
 		false,
 		filter);
 
-	/* remove filters */
+	/* DGCH remove filters */
 	for (p : layerset.getDisplayables(Patch.class))
 		p.setFilters(null);
 
