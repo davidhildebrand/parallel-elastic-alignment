@@ -18,13 +18,15 @@ import ini.trakem2.Project;
 import ini.trakem2.display.Layer;
 import ini.trakem2.display.Patch;
 import ini.trakem2.utils.Filter;
-import ini.trakem2.utils.Montage;
+/* import ini.trakem2.utils.Montage; */
 import ini.trakem2.imaging.filters.NormalizeLocalContrast;
 import ini.trakem2.imaging.filters.IFilter;
 import ij.ImagePlus;
 import java.lang.Runtime;
 import java.util.ArrayList;
 import java.util.HashSet;
+import mpicbg.trakem2.align.Align
+import mpicbg.trakem2.align.AlignTask
 import mpicbg.trakem2.align.ElasticLayerAlignment;
 import mpicbg.trakem2.align.RegularizedAffineLayerAlignment;
 
@@ -80,7 +82,61 @@ try {
 	/* save the project */
 		project.saveAs(dir + "/project.xml", false);
 	
-	/* prepare alignment */
+	/* prepare intra-section alignment */
+	paramMontage = Align.ParamOptimize()
+	paramMontage.sift.initialSigma 		= 1.6f;
+	paramMontage.sift.steps 		= 3;
+	paramMontage.sift.minOctaveSize 	= 300;
+	paramMontage.sift.maxOctaveSize 	= 1500;
+	paramMontage.sift.fdSize 		= 4;
+	paramMontage.sift.fdBins 		= 8;
+	paramMontage.rod 			= 0.92f;
+	/*
+	paramMontage.clearCache 		= true;
+	paramMontage.maxNumThreadsSift 		= 6; //runtime.availableProcessors();
+	*/
+
+	paramMontage.maxEpsilon 		= 100.0f;
+	paramMontage.minInlierRatio 		= 0.00f;
+	paramMontage.minNumInliers 		= 20;
+        /*  ModelIndex 0 = "Translation", 1 = "Rigid", 2 = "Similarity", 3 = "Montage" */
+	paramMontage.expectedModelIndex 	= 3;
+	paramMontage.rejectIdentity 		= false;
+	paramMontage.identityTolerance 		= 0.0f;
+	/*
+	paramMontage.multipleHypotheses 	= false;
+	paramMontage.maxNumNeighbors 		= 10;
+	paramMontage.maxNumFailures 		= 10;
+	paramMontage.maxNumThreads 		= 6; //runtime.availableProcessors();
+	*/
+	
+	paramMontage.desiredModelIndex 		= 3;
+	paramMontage.correspondenceWeight	= 1.0f;
+	paramMontage.regularize 		= false;
+	/*
+	paramMontage.regularizerIndex 		= 1;
+	*/
+	paramMontage.maxIterationsOptimize 	= 2000;
+	paramMontage.maxPlateauwidthOptimize 	= 200;
+	paramMontage.filterOutliers		= false;
+	paramMontage.meanFactor 		= 3.0f;
+	tilesAreInPlace				= false;
+	largestGraphOnly 			= false;
+	hideDisconnectedTiles 			= false;
+	deleteDisconnectedTiles 		= false;
+
+	paramMontage.visualize 			= false;
+
+	AlignTask.montageLayers(paramMontage,
+				layerset.getLayers(), 
+				tilesAreInPlace, 
+				largestGraphOnly, 
+				hideDisconnectedTiles, 
+				deleteDisconnectedTiles);
+	/* AlignTask.montageLayers(paramMontage, layerset.getLayers(), False, False, False, False); */
+
+
+	/* prepare inter-section alignment */
 	layerRange = layerset.getLayers();
 	fixedLayers = new HashSet();
 	emptyLayers = new HashSet();
@@ -95,37 +151,37 @@ try {
 	/* determined in collaboration with S Saalfeld 140609 */
 	paramAffine = new RegularizedAffineLayerAlignment.Param();
 	
-	paramAffine.ppm.sift.initialSigma = 1.6f;
-	paramAffine.ppm.sift.steps = 3;
-	paramAffine.ppm.sift.minOctaveSize = 500;
-	paramAffine.ppm.sift.maxOctaveSize = 1024;
-	paramAffine.ppm.sift.fdSize = 4;
-	paramAffine.ppm.sift.fdBins = 8;
-	paramAffine.ppm.rod = 0.92f;
-	paramAffine.ppm.clearCache = true;
-	paramAffine.ppm.maxNumThreadsSift = 6; //runtime.availableProcessors();
+	paramAffine.ppm.sift.initialSigma 	= 1.6f;
+	paramAffine.ppm.sift.steps 		= 3;
+	paramAffine.ppm.sift.minOctaveSize 	= 500;
+	paramAffine.ppm.sift.maxOctaveSize 	= 1024;
+	paramAffine.ppm.sift.fdSize 		= 4;
+	paramAffine.ppm.sift.fdBins 		= 8;
+	paramAffine.ppm.rod 			= 0.92f;
+	paramAffine.ppm.clearCache 		= true;
+	paramAffine.ppm.maxNumThreadsSift 	= 6; //runtime.availableProcessors();
 	
-	paramAffine.maxEpsilon = 20.0f;
-	paramAffine.minInlierRatio = 0.05f;
-	paramAffine.minNumInliers = 10;
+	paramAffine.maxEpsilon 			= 20.0f;
+	paramAffine.minInlierRatio 		= 0.05f;
+	paramAffine.minNumInliers 		= 10;
         /*  ModelIndex 0 = "Translation", 1 = "Rigid", 2 = "Similarity", 3 = "Affine" */
-	paramAffine.expectedModelIndex = 3;
-	paramAffine.multipleHypotheses = false;
-	paramAffine.rejectIdentity = false;
-	paramAffine.identityTolerance = 0.0f;
-	paramAffine.maxNumNeighbors = 10;
-	paramAffine.maxNumFailures = 10;
-	paramAffine.maxNumThreads = 6; //runtime.availableProcessors();
+	paramAffine.expectedModelIndex 		= 3;
+	paramAffine.multipleHypotheses 		= false;
+	paramAffine.rejectIdentity 		= false;
+	paramAffine.identityTolerance 		= 0.0f;
+	paramAffine.maxNumNeighbors 		= 10;
+	paramAffine.maxNumFailures 		= 10;
+	paramAffine.maxNumThreads 		= 6; //runtime.availableProcessors();
 	
-	paramAffine.desiredModelIndex = 3;
-	paramAffine.regularize = true;
-	paramAffine.maxIterationsOptimize = 5000;
-	paramAffine.maxPlateauwidthOptimize = 5000;
-	paramAffine.regularizerIndex = 1;
-	paramAffine.visualize = false;
+	paramAffine.desiredModelIndex 		= 3;
+	paramAffine.regularize 			= true;
+	paramAffine.maxIterationsOptimize 	= 5000;
+	paramAffine.maxPlateauwidthOptimize 	= 5000;
+	paramAffine.regularizerIndex 		= 1;
+	paramAffine.visualize 			= false;
 
 	/* first affine regularized by 0.10 rigid */
-	paramAffine.lambda = 0.1f;
+	paramAffine.lambda 			= 0.1f;
 	new RegularizedAffineLayerAlignment().exec(
 			paramAffine,
 			layerRange,	
@@ -137,7 +193,7 @@ try {
 			filter);
 	
 	/* second affine regularized by 0.01 rigid */
-	paramAffine.lambda = 0.01f;
+	paramAffine.lambda 			= 0.01f;
 	layerset.setMinimumDimensions();
 	
 	new RegularizedAffineLayerAlignment().exec(
@@ -158,36 +214,36 @@ try {
 	/* elastic alignment */
 	paramElastic = new ElasticLayerAlignment.Param();
 	
-	paramElastic.layerScale = 0.5f;
-	paramElastic.searchRadius = 40;
-	paramElastic.blockRadius = 80;
-	paramElastic.resolutionSpringMesh = (int)Math.ceil((double)layerset.get2DBounds().width / 8192.0 * 24.0);
+	paramElastic.layerScale 		= 0.5f;
+	paramElastic.searchRadius 		= 40;
+	paramElastic.blockRadius 		= 80;
+	paramElastic.resolutionSpringMesh 	= (int)Math.ceil((double)layerset.get2DBounds().width / 8192.0 * 24.0);
 	
-	paramElastic.minR = 0.6f;
-	paramElastic.maxCurvatureR = 10.0f;
-	paramElastic.rodR = 0.98f;
+	paramElastic.minR 			= 0.6f;
+	paramElastic.maxCurvatureR 		= 10.0f;
+	paramElastic.rodR 			= 0.98f;
 	
-	paramElastic.useLocalSmoothnessFilter = true;
-	paramElastic.localModelIndex = 3;
-	paramElastic.localRegionSigma = 200.0f;
-	paramElastic.maxLocalEpsilon = 20.0f;
-	paramElastic.maxLocalTrust = 3.0f;
+	paramElastic.useLocalSmoothnessFilter 	= true;
+	paramElastic.localModelIndex 		= 3;
+	paramElastic.localRegionSigma 		= 200.0f;
+	paramElastic.maxLocalEpsilon 		= 20.0f;
+	paramElastic.maxLocalTrust 		= 3.0f;
 	
-	paramElastic.isAligned = true;
-	paramElastic.maxNumFailures = 10;
-	paramElastic.maxNumNeighbors = 10;
-	paramElastic.maxNumThreads = 6;
+	paramElastic.isAligned 			= true;
+	paramElastic.maxNumFailures		= 10;
+	paramElastic.maxNumNeighbors 		= 10;
+	paramElastic.maxNumThreads 		= 6;
 	
-	paramElastic.desiredModelIndex = 1;
-	paramElastic.maxIterationsOptimize = 1000;
-	paramElastic.maxPlateauwidthOptimize = 200;
+	paramElastic.desiredModelIndex 		= 1;
+	paramElastic.maxIterationsOptimize 	= 1000;
+	paramElastic.maxPlateauwidthOptimize 	= 200;
 
-	paramElastic.stiffnessSpringMesh = 0.10f;
-	paramElastic.maxStretchSpringMesh = 2000.0f;
-	paramElastic.maxIterationsSpringMesh = 3000;
-	paramElastic.maxPlateauwidthSpringMesh = 200;
-	paramElastic.dampSpringMesh = 0.9f;
-	paramElastic.useLegacyOptimizer = true;
+	paramElastic.stiffnessSpringMesh 	= 0.10f;
+	paramElastic.maxStretchSpringMesh 	= 2000.0f;
+	paramElastic.maxIterationsSpringMesh 	= 3000;
+	paramElastic.maxPlateauwidthSpringMesh 	= 200;
+	paramElastic.dampSpringMesh 		= 0.9f;
+	paramElastic.useLegacyOptimizer 	= true;
 
 	new ElasticLayerAlignment().exec(
 		paramElastic,
