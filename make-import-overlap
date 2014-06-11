@@ -17,7 +17,6 @@ min=${3:-11000}
 max=${4:-30000}
 t=${5:-1}
 
-
 z=0
 zmod=0
 zmoda=0
@@ -29,6 +28,7 @@ mkdir -p "$filea"
 
 for row in `cat "${1}"`
 do
+
 	if [ "$zmod" -eq "$mod" ]
 	then
 		zmod=0
@@ -50,4 +50,3 @@ do
 	zmoda=$(($zmoda+1))
 	z=$(($z+1))
 done
-
