@@ -1,8 +1,7 @@
 #!/bin/bash
 
-# call clean-import-overlap <file-list> <chunk-size>
+# call clean-import-overlap-from-manifest <trakem2-manifest> <chunk-size>
 # chunk-size - the number of layers in one range, overlap is 50%
-# 
 
 IFS=$'\n'
 
@@ -27,23 +26,15 @@ do
 		continue
 	fi
 
-#	if [ -z "$row" ]
-#	then
-#		echo "empty row"
-#		continue
-#	fi
-
 	if [ "$zmod" -eq "$mod" ]
 	then
 		zmod=0
 		rm -rf "$z-$(($z+$mod-1))"
-		echo "rm -rf $z-$(($z+$mod-1))"
 	fi
 	if [ "$zmoda" -eq "$(($mod/2))" ]
 	then
 		zmoda=$((-$mod/2))
 		rm -rf "$z-$(($z+$mod-1))"
-		echo "rm -rf $z-$(($z+$mod-1))"
 	fi
 
 	if [ "$zactual" -ne "$zlast" ]

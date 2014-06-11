@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# call create-import <file-list> <chunk-size> <min> <max> <type>
+# call make-import-overlap-from-manifest <trakem2-manifest> <chunk-size> <min> <max> <type>
 #
 # create the file list e.g.
 #   find `pwd`/raw/ -name "*.tif" | sort > ls-sorted.txt
@@ -8,7 +8,6 @@
 # min - minimum intensity, mapped to 0 in uint8
 # max - maximum intensity, mapped to 255 in uint8
 # type - 0: uint8 (gray), 1: uint16 (gray), 2: float32 (gray), 3: uint8 (indexed color), 4s: uint32 (RGB color)
-# 
 
 IFS=$'\n'
 
