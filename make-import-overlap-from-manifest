@@ -1,0 +1,71 @@
+#!/bin/bash
+
+# call create-import <file-list> <chunk-size> <min> <max> <type>
+#
+# create the file list e.g.
+#   find `pwd`/raw/ -name "*.tif" | sort > ls-sorted.txt
+# chunk-size - the number of layers in one range, overlap is 50%
+# min - minimum intensity, mapped to 0 in uint8
+# max - maximum intensity, mapped to 255 in uint8
+# type - 0: uint8 (gray), 1: uint16 (gray), 2: float32 (gray), 3: uint8 (indexed color), 4s: uint32 (RGB color)
+# 
+
+IFS=$'\n'
+
+mod=${2:-100}
+min=${3:-11000}
+max=${4:-30000}
+t=${5:-1}
+
+z=0
+zlast=0
+zmod=0
+zmoda=0
+
+file="$z-$(($mod-1))"
+filea="$z-$(($mod/2-1))"
+mkdir -p "$file"
+mkdir -p "$filea"
+
+for row in `cat "${1}"`
+do
+	zactual=`echo ${row} | tr -s ' ' | cut -f 4`
+
+	re='^[0-9]+$'
+	if ! [[ $zactual =~ $re ]]
+	then
+		echo "DEBUG: zactual $zactual is not a number"
+		continue
+	fi
+	
+	if [ "$zmod" -eq "$mod" ]
+	then
+		zmod=0
+		file="$z-$(($z+$mod-1))"
+		mkdir -p "$file"
+	fi
+	
+	if [ "$zmoda" -eq "$(($mod/2))" ]
+	then
+		zmoda=$((-$mod/2))
+		filea="$z-$(($z+$mod-1))"
+		mkdir -p "$filea"
+	fi
+	
+	echo "$row - - $min $max $t" >> "${file}/import.txt"
+	echo "$row - - $min $max $t" >> "${filea}/import.txt"
+	#echo $zactual
+	#echo "$row - - $min $max $t"
+	
+	if [ "$zactual" -ne "$zlast" ]
+	then 
+		zmod=$(($zmod+1))
+		zmoda=$(($zmoda+1))
+		z=$(($z+1))
+	fi
+	#echo "debug $zmod zmod"
+	#echo "debug $zmoda zmoda"
+	#echo "debug $z z"
+	zlast=$zactual
+	unset zactual
+done

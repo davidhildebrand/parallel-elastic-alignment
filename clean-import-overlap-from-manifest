@@ -1,0 +1,57 @@
+#!/bin/bash
+
+# call clean-import-overlap <file-list> <chunk-size>
+# chunk-size - the number of layers in one range, overlap is 50%
+# 
+
+IFS=$'\n'
+
+mod=${2:-100}
+
+z=0
+zlast=0
+zmod=0
+zmoda=0
+
+rm -rf "0-$(($mod-1))"
+rm -rf "0-$(($mod/2-1))"
+
+for row in `cat "${1}"`
+do
+	zactual=`echo ${row} | tr -s ' ' | cut -f 4`
+
+	re='^[0-9]+$'
+	if ! [[ $zactual =~ $re ]]
+	then
+		echo "DEBUG: zactual $zactual is not a number"
+		continue
+	fi
+
+#	if [ -z "$row" ]
+#	then
+#		echo "empty row"
+#		continue
+#	fi
+
+	if [ "$zmod" -eq "$mod" ]
+	then
+		zmod=0
+		rm -rf "$z-$(($z+$mod-1))"
+		echo "rm -rf $z-$(($z+$mod-1))"
+	fi
+	if [ "$zmoda" -eq "$(($mod/2))" ]
+	then
+		zmoda=$((-$mod/2))
+		rm -rf "$z-$(($z+$mod-1))"
+		echo "rm -rf $z-$(($z+$mod-1))"
+	fi
+
+	if [ "$zactual" -ne "$zlast" ]
+	then
+		zmod=$(($zmod+1))
+		zmoda=$(($zmoda+1))
+		z=$(($z+1))
+	fi
+	zlast=$zactual
+	unset zactual
+done
