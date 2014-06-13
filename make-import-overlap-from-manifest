@@ -26,9 +26,9 @@ filea="$z-$(($mod/2-1))"
 mkdir -p "$file"
 mkdir -p "$filea"
 
-for row in `cat "${1}"`
+for row in `cat "${1}" | expand -t 1`
 do
-	zactual=`echo ${row} | tr -s ' ' | cut -f 4`
+	zactual=`echo ${row} | tr -s ' ' | cut -d ' ' -f 4`
 
 	re='^[0-9]+$'
 	if ! [[ $zactual =~ $re ]]
@@ -37,6 +37,19 @@ do
 		continue
 	fi
 	
+	#echo "DEBUG: $zactual zactual"
+	#echo "DEBUG: $zmod zmod"
+	#echo "DEBUG: $zmoda zmoda"
+	#echo "DEBUG: $z z"
+	#echo "DEBUG: $row - - $min $max $t"
+
+	if [ "$zactual" -eq "$zlast" ]
+	then
+		echo "$row - - $min $max $t" >> "${file}/import.txt"
+		echo "$row - - $min $max $t" >> "${filea}/import.txt"
+		continue
+	fi
+
 	if [ "$zmod" -eq "$mod" ]
 	then
 		zmod=0
@@ -53,18 +66,11 @@ do
 	
 	echo "$row - - $min $max $t" >> "${file}/import.txt"
 	echo "$row - - $min $max $t" >> "${filea}/import.txt"
-	#echo $zactual
-	#echo "$row - - $min $max $t"
 	
-	if [ "$zactual" -ne "$zlast" ]
-	then 
-		zmod=$(($zmod+1))
-		zmoda=$(($zmoda+1))
-		z=$(($z+1))
-	fi
-	#echo "debug $zmod zmod"
-	#echo "debug $zmoda zmoda"
-	#echo "debug $z z"
+	zmod=$(($zmod+1))
+	zmoda=$(($zmoda+1))
+	z=$(($z+1))
+
 	zlast=$zactual
 	unset zactual
 done

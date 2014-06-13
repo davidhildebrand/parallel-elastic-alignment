@@ -26,23 +26,33 @@ do
 		continue
 	fi
 
+	#echo "DEBUG: $zactual zactual"
+	#echo "DEBUG: $zmod zmod"
+	#echo "DEBUG: $zmoda zmoda"
+	#echo "DEBUG: $z z"
+
+	if [ "$zactual" -eq "$zlast" ]
+	then
+		continue
+	fi
+
 	if [ "$zmod" -eq "$mod" ]
 	then
 		zmod=0
 		rm -rf "$z-$(($z+$mod-1))"
+		#echo "DEBUG: rm -rf $z-$(($z+$mod-1))"
 	fi
 	if [ "$zmoda" -eq "$(($mod/2))" ]
 	then
 		zmoda=$((-$mod/2))
 		rm -rf "$z-$(($z+$mod-1))"
+		#echo "DEBUG: rm -rf $z-$(($z+$mod-1))"
 	fi
 
-	if [ "$zactual" -ne "$zlast" ]
-	then
-		zmod=$(($zmod+1))
-		zmoda=$(($zmoda+1))
-		z=$(($z+1))
-	fi
+	zmod=$(($zmod+1))
+	zmoda=$(($zmoda+1))
+	z=$(($z+1))
+
 	zlast=$zactual
 	unset zactual
 done
