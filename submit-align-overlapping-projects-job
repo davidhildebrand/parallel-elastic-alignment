@@ -1,9 +1,0 @@
-#!/bin/bash
-
-pwd=`pwd`
-mkdir -p $pwd/jobs/log
-cd $pwd/jobs/log
-
-qsub -cwd -pe batch 4 $pwd/jobs/align-overlapping-projects
-
-cd $pwd
