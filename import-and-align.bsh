@@ -160,7 +160,7 @@ try {
 	paramElastic.layerScale = 0.5f;
 	paramElastic.searchRadius = 40;
 	paramElastic.blockRadius = 80;
-	paramElastic.resolutionSpringMesh = 32; /* (int)Math.ceil((double)layerset.get2DBounds().width / 8192.0 * 24.0); */
+	paramElastic.resolutionSpringMesh = 24; /* (int)Math.ceil((double)layerset.get2DBounds().width / 8192.0 * 24.0); */
 	
 	paramElastic.minR = 0.6f;
 	paramElastic.maxCurvatureR = 10.0f;

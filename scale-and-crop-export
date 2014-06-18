@@ -8,7 +8,7 @@ logs="$jobs/log"
 mkdir -p "$export/scale10"
 #mkdir -p "$export/crop1"
 #mkdir -p "$export/crop2"
-mkdir -p "$export/crop"
+#mkdir -p "$export/crop"
 mkdir -p "$jobs"
 mkdir -p "$logs"
 
@@ -21,12 +21,11 @@ do
 #	echo "convert $export/$file -crop 768x768+1550+4500 $export/crop2/$file" >> "$script"
 #	echo "convert $export/$file -crop 768x768+3970+5440 $export/crop/$file" >> "$script"
 #	echo "convert $export/$file -crop 768x768+1400+4700 $export/crop/$file" >> "$script"
-	echo "convert $export/$file -crop 2060x5120+3620+2220 $export/crop/$file" >> "$script"
+#	echo "convert $export/$file -crop 2060x5120+3620+2220 $export/crop/$file" >> "$script"
 	chmod a+x "$script"
 	cd "$logs"
 	qsub -cwd $script
-	bsub -qparallel -o$pwd/jobs/log/export-scale-crop-${file}_job%J.log -W168:00 -B -N -n6 -R"span[ptile=6]" -R"rusage[mem=3072]" $script
-	echo "bsub -qparallel -o$pwd/jobs/log/export-scale-crop-${file}_job%J.log -W168:00 -B -N -n6 -R\"span[ptile=6]\" -R\"rusage[mem=3072]\" $script"
+	bsub -qparallel -o$pwd/jobs/log/export-scale-crop-${file}_job%J.log -W168:00 -n4 -R"span[ptile=4]" -R"rusage[mem=2048]" $script
 	cd "$pwd"
 done
 cd "$pwd"
